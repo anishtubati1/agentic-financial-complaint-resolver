@@ -81,6 +81,11 @@ def load_and_clean_complaints() -> pd.DataFrame:
     df["narrative"] = df["narrative"].astype(str).str.strip()
     df = df[df["narrative"].str.len() > 50]
 
+    MAX_ROWS = 5000
+    if len(df) > MAX_ROWS:
+        df = df.sample(n=MAX_ROWS, random_state=42)
+
+
     PROCESSED_PATH.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(PROCESSED_PATH, index=False)
 
