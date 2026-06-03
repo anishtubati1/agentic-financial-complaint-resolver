@@ -3,6 +3,7 @@ import pandas as pd
 
 from src.agents.intake_agent import run_intake_agent
 from src.agents.classification_agent import run_classification_agent
+from src.agents.retrieval_agent import run_retrieval_agent
 
 DATA_PATH = "data/processed/cleaned_complaints.csv"
 
@@ -59,12 +60,30 @@ def main():
     )
     print(json.dumps(classification_result, indent=2, default=str))
 
+    print("\n=== Running Retrieval Agent ===")
+    retrieval_result = run_retrieval_agent(
+        complaint_text=complaint_text,
+        top_k=5,
+    )
+    print(json.dumps(retrieval_result, indent=2, default=str))
+
     print("\n=== Comparison Against CFPB Labels ===")
     comparison = {
         "predicted_product": classification_result.get("predicted_product"),
         "actual_product": actual_labels.get("actual_product"),
         "predicted_issue": classification_result.get("predicted_issue"),
         "actual_issue": actual_labels.get("actual_issue"),
+        "retrieved_case_count": len(retrieval_result.get("similar_cases", [])),
+        "top_retrieved_product": (
+            retrieval_result.get("similar_cases", [{}])[0].get("product")
+            if retrieval_result.get("similar_cases")
+            else None
+        ),
+        "top_retrieved_issue": (
+            retrieval_result.get("similar_cases", [{}])[0].get("issue")
+            if retrieval_result.get("similar_cases")
+            else None
+        ),
     }
     print(json.dumps(comparison, indent=2, default=str))
 
