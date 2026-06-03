@@ -40,7 +40,7 @@ def run_classification_agent(complaint_text: str, metadata: dict | None = None) 
             {"role": "system", "content": system_prompt},
             {
                 "role": "user",
-                "content": json.dumps(user_content, indent=2),
+                "content": json.dumps(user_content, indent=2, default=str),
             },
         ],
     )
